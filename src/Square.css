@@ -1,0 +1,9 @@
+.Square {
+  width: 25px;
+  height: 25px;
+  margin: -2.5px;
+  border: 5px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
