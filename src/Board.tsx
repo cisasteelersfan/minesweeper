@@ -48,9 +48,48 @@ export const Board = () => {
   const [board, setBoard] = React.useState(computeNumbers(initialBoard));
 
   const uncoverSquare = (row: number, col: number) => () => {
+    if (board[row][col].uncovered) return;
     const boardCopy = board.map(a => a.slice());
+    uncoverAdjacent(boardCopy, row, col);
     boardCopy[row][col].uncovered = true;
     setBoard(boardCopy);
+  };
+
+  const uncoverAdjacent = (
+    b: SquareType[][],
+    row: number,
+    col: number
+  ): void => {
+    const rows = b.length;
+    const cols = b[0].length;
+    const uncoverAdjacent = (r: number, c: number) => {
+      const uncover = (r: number, c: number) => {
+        if (r < 0 || r >= rows || c < 0 || c >= cols) return;
+        b[r][c].uncovered = true;
+      };
+      uncover(r - 1, c);
+      uncover(r + 1, c);
+      uncover(r, c - 1);
+      uncover(r, c + 1);
+      uncover(r - 1, c - 1);
+      uncover(r + 1, c - 1);
+      uncover(r - 1, c + 1);
+      uncover(r + 1, c + 1);
+    };
+    let toUncover: { row: number; col: number }[] = [];
+    const dfs = (r: number, c: number) => {
+      if (r < 0 || r >= rows || c < 0 || c >= cols) return;
+      if (!b[r][c].uncovered && b[r][c].value === 0) {
+        b[r][c].uncovered = true;
+        toUncover.push({ row: r, col: c });
+        dfs(r - 1, c);
+        dfs(r + 1, c);
+        dfs(r, c - 1);
+        dfs(r, c + 1);
+      }
+    };
+    dfs(row, col);
+    toUncover.map(({ row, col }) => uncoverAdjacent(row, col));
   };
 
   return (

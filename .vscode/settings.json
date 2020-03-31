@@ -1,4 +1,5 @@
 {
   "editor.formatOnSave": true,
-  "editor.detectIndentation": true
+  "editor.detectIndentation": true,
+  "emmet.showExpandedAbbreviation": "never"
 }
