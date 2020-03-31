@@ -7,3 +7,19 @@
   align-items: center;
   justify-content: center;
 }
+
+.covered {
+  background-color: orange;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
+}
+
+.flag {
+  width: 25px;
+  height: 25px;
+}
