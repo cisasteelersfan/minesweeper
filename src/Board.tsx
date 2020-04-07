@@ -13,7 +13,7 @@ export const Board = () => {
     return Array.from(new Array(10), () => ({
       value: 0,
       isBomb: Math.floor(Math.random() * 9) === 0,
-      uncovered: false
+      uncovered: false,
     }));
   };
   const computeNumbers = (b: SquareType[][]): SquareType[][] => {
@@ -46,10 +46,10 @@ export const Board = () => {
   const initialBoard = Array.from(new Array(10), generateRow);
 
   const getNumberCovered = () => {
-    return board.flat().filter(value => !value.uncovered).length;
+    return board.flat().filter((value) => !value.uncovered).length;
   };
   const getNumberBombs = () => {
-    return board.flat().filter(value => value.isBomb).length;
+    return board.flat().filter((value) => value.isBomb).length;
   };
 
   const [board, setBoard] = React.useState(computeNumbers(initialBoard));
@@ -61,7 +61,7 @@ export const Board = () => {
     if (board[row][col].isBomb) {
       setLose(true);
     }
-    const boardCopy = board.map(a => a.slice());
+    const boardCopy = board.map((a) => a.slice());
     uncoverAdjacentBlanks(boardCopy, row, col);
     boardCopy[row][col].uncovered = true;
     setBoard(boardCopy);
@@ -80,7 +80,9 @@ export const Board = () => {
     const uncoverAdjacent = (r: number, c: number) => {
       const uncover = (r: number, c: number) => {
         if (r < 0 || r >= rows || c < 0 || c >= cols) return;
-        b[r][c].uncovered = true;
+        if (b[r][c].value !== 0) {
+          b[r][c].uncovered = true;
+        }
       };
       uncover(r - 1, c);
       uncover(r + 1, c);
@@ -110,7 +112,7 @@ export const Board = () => {
   return (
     <div className="Board">
       {isLose && "You lose"}
-      {isWin && "You win!!!!"}
+      {!isLose && isWin && "You win!!!!"}
       {board.map((row, rowIdx) => (
         <div className="row">
           {row.map((val, colIdx) => (
