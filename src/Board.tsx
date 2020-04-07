@@ -8,11 +8,14 @@ export interface SquareType {
   uncovered: boolean;
 }
 
+const ROWS = 10;
+const COLS = 10;
+
 export const Board = () => {
-  const generateRow = (): SquareType[] => {
+  const generateRandomRow = (): SquareType[] => {
     return Array.from(new Array(10), () => ({
       value: 0,
-      isBomb: Math.floor(Math.random() * 9) === 0,
+      isBomb: Math.floor(Math.random() * 5) === 0,
       uncovered: false,
     }));
   };
@@ -43,20 +46,50 @@ export const Board = () => {
     }
     return b;
   };
-  const initialBoard = Array.from(new Array(10), generateRow);
+  const initialBoard = Array.from(new Array(10), generateRandomRow);
 
-  const getNumberCovered = () => {
+  const removeBomb = (board: SquareType[][], row: number, col: number) => {
+    if (row >= 0 && col >= 0 && row < ROWS && col < COLS) {
+      board[row][col].isBomb = false;
+    }
+  };
+
+  const generateBoardWithStart = (row: number, col: number): SquareType[][] => {
+    const board = Array.from(new Array(10), generateRandomRow);
+    for (let r = -1; r <= 1; r++) {
+      for (let c = -1; c <= 1; c++) {
+        removeBomb(board, row + r, col + c);
+      }
+    }
+    return board;
+  };
+
+  const getNumberCovered = (board: SquareType[][]) => {
     return board.flat().filter((value) => !value.uncovered).length;
   };
-  const getNumberBombs = () => {
+  const getNumberBombs = (board: SquareType[][]) => {
     return board.flat().filter((value) => value.isBomb).length;
   };
 
   const [board, setBoard] = React.useState(computeNumbers(initialBoard));
   const [isWin, setWin] = React.useState(false);
   const [isLose, setLose] = React.useState(false);
+  const [gameStarted, setGameStarted] = React.useState(false);
+  React.useEffect(() => {
+    if (getNumberBombs(board) === getNumberCovered(board)) {
+      setWin(true);
+    }
+  }, [board]);
 
   const uncoverSquare = (row: number, col: number) => () => {
+    if (!gameStarted) {
+      setGameStarted(true);
+      const initializedBoard = computeNumbers(generateBoardWithStart(row, col));
+      uncoverAdjacentBlanks(initializedBoard, row, col);
+      initializedBoard[row][col].uncovered = true;
+      setBoard(initializedBoard);
+      return;
+    }
     if (board[row][col].uncovered) return;
     if (board[row][col].isBomb) {
       setLose(true);
@@ -65,9 +98,6 @@ export const Board = () => {
     uncoverAdjacentBlanks(boardCopy, row, col);
     boardCopy[row][col].uncovered = true;
     setBoard(boardCopy);
-    if (getNumberBombs() === getNumberCovered()) {
-      setWin(true);
-    }
   };
 
   const uncoverAdjacentBlanks = (
