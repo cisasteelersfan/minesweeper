@@ -29,7 +29,9 @@ export const Square = (props: SquareProps) => {
       onClick={handleClick}
       onContextMenu={handleClick}
     >
-      {showFlag && <img className="flag" alt="flag" src={flag} />}
+      {showFlag && !props.uncovered && (
+        <img className="flag" alt="flag" src={flag} />
+      )}
       {props.uncovered &&
         (props.isBomb ? (
           <span className="dot" />

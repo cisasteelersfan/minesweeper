@@ -19,7 +19,7 @@ export const Board = () => {
       uncovered: false,
     }));
   };
-  const computeNumbers = (b: SquareType[][]): SquareType[][] => {
+  const computeAdjacent = (b: SquareType[][]): SquareType[][] => {
     const rows = b.length;
     const cols = b[0].length;
     for (let row = 0; row < rows; row++) {
@@ -27,10 +27,8 @@ export const Board = () => {
         let bombs = 0;
         for (let r = -1; r <= 1; r++) {
           for (let c = -1; c <= 1; c++) {
-            if (r === 0 && c === 0) {
-              continue;
-            }
             if (
+              (r === 0 && c === 0) ||
               row + r < 0 ||
               row + r >= rows ||
               col + c < 0 ||
@@ -71,7 +69,7 @@ export const Board = () => {
     return board.flat().filter((value) => value.isBomb).length;
   };
 
-  const [board, setBoard] = React.useState(computeNumbers(initialBoard));
+  const [board, setBoard] = React.useState(computeAdjacent(initialBoard));
   const [isWin, setWin] = React.useState(false);
   const [isLose, setLose] = React.useState(false);
   const [gameStarted, setGameStarted] = React.useState(false);
@@ -84,7 +82,9 @@ export const Board = () => {
   const uncoverSquare = (row: number, col: number) => () => {
     if (!gameStarted) {
       setGameStarted(true);
-      const initializedBoard = computeNumbers(generateBoardWithStart(row, col));
+      const initializedBoard = computeAdjacent(
+        generateBoardWithStart(row, col)
+      );
       uncoverAdjacentBlanks(initializedBoard, row, col);
       initializedBoard[row][col].uncovered = true;
       setBoard(initializedBoard);
@@ -93,11 +93,23 @@ export const Board = () => {
     if (board[row][col].uncovered) return;
     if (board[row][col].isBomb) {
       setLose(true);
+      uncoverAll();
     }
     const boardCopy = board.map((a) => a.slice());
     uncoverAdjacentBlanks(boardCopy, row, col);
     boardCopy[row][col].uncovered = true;
     setBoard(boardCopy);
+  };
+
+  const uncoverAll = () => {
+    setBoard(
+      board.map((row) =>
+        row.map((square) => {
+          square.uncovered = true;
+          return square;
+        })
+      )
+    );
   };
 
   const uncoverAdjacentBlanks = (
