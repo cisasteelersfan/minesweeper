@@ -1,17 +1,12 @@
 import React from "react";
 import { Square } from "./Square";
 import "./Board.css";
-
-export interface SquareType {
-  isBomb: boolean;
-  value: number;
-  uncovered: boolean;
-}
+import { SquareType, BoardType } from "./types";
 
 const ROWS = 10;
 const COLS = 10;
 
-export const Board = () => {
+export const Board = (): JSX.Element => {
   const generateRandomRow = (): SquareType[] => {
     return Array.from(new Array(10), () => ({
       value: 0,
@@ -19,7 +14,7 @@ export const Board = () => {
       uncovered: false,
     }));
   };
-  const computeAdjacent = (b: SquareType[][]): SquareType[][] => {
+  const computeAdjacent = (b: BoardType): BoardType => {
     const rows = b.length;
     const cols = b[0].length;
     for (let row = 0; row < rows; row++) {
@@ -46,13 +41,13 @@ export const Board = () => {
   };
   const initialBoard = Array.from(new Array(10), generateRandomRow);
 
-  const removeBomb = (board: SquareType[][], row: number, col: number) => {
+  const removeBomb = (board: BoardType, row: number, col: number): void => {
     if (row >= 0 && col >= 0 && row < ROWS && col < COLS) {
       board[row][col].isBomb = false;
     }
   };
 
-  const generateBoardWithStart = (row: number, col: number): SquareType[][] => {
+  const generateBoardWithStart = (row: number, col: number): BoardType => {
     const board = Array.from(new Array(10), generateRandomRow);
     for (let r = -1; r <= 1; r++) {
       for (let c = -1; c <= 1; c++) {
@@ -62,10 +57,10 @@ export const Board = () => {
     return board;
   };
 
-  const getNumberCovered = (board: SquareType[][]) => {
+  const getNumberCovered = (board: BoardType): number => {
     return board.flat().filter((value) => !value.uncovered).length;
   };
-  const getNumberBombs = (board: SquareType[][]) => {
+  const getNumberBombs = (board: BoardType): number => {
     return board.flat().filter((value) => value.isBomb).length;
   };
 
@@ -79,7 +74,7 @@ export const Board = () => {
     }
   }, [board]);
 
-  const uncoverSquare = (row: number, col: number) => () => {
+  const uncoverSquare = (row: number, col: number) => (): void => {
     if (!gameStarted) {
       setGameStarted(true);
       const initializedBoard = computeAdjacent(
@@ -101,7 +96,7 @@ export const Board = () => {
     setBoard(boardCopy);
   };
 
-  const uncoverAll = () => {
+  const uncoverAll = (): void => {
     setBoard(
       board.map((row) =>
         row.map((square) => {
@@ -113,14 +108,14 @@ export const Board = () => {
   };
 
   const uncoverAdjacentBlanks = (
-    b: SquareType[][],
+    b: BoardType,
     row: number,
     col: number
   ): void => {
     const rows = b.length;
     const cols = b[0].length;
-    const uncoverAdjacent = (r: number, c: number) => {
-      const uncover = (r: number, c: number) => {
+    const uncoverAdjacent = (r: number, c: number): void => {
+      const uncover = (r: number, c: number): void => {
         if (r < 0 || r >= rows || c < 0 || c >= cols) return;
         if (b[r][c].value !== 0) {
           b[r][c].uncovered = true;
@@ -135,8 +130,8 @@ export const Board = () => {
       uncover(r - 1, c + 1);
       uncover(r + 1, c + 1);
     };
-    let toUncover: { row: number; col: number }[] = [];
-    const dfs = (r: number, c: number) => {
+    const toUncover: { row: number; col: number }[] = [];
+    const dfs = (r: number, c: number): void => {
       if (r < 0 || r >= rows || c < 0 || c >= cols) return;
       if (!b[r][c].uncovered && b[r][c].value === 0 && !b[r][c].isBomb) {
         b[r][c].uncovered = true;
@@ -156,9 +151,10 @@ export const Board = () => {
       {isLose && "You lose"}
       {!isLose && isWin && "You win!!!!"}
       {board.map((row, rowIdx) => (
-        <div className="row">
+        <div className="row" key={rowIdx}>
           {row.map((val, colIdx) => (
             <Square
+              key={`${rowIdx}-${colIdx}`}
               value={val.value}
               isBomb={val.isBomb}
               uncovered={val.uncovered}
