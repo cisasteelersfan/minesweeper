@@ -10,7 +10,7 @@ const COLS = 10;
 export const Board = (): JSX.Element => {
   const emptyBoard = (): BoardType =>
     Array.from(new Array(ROWS), () => ({
-      value: 0,
+      value: -1,
       isBomb: false,
       uncovered: false,
     })).map((row) => Array.from(new Array(COLS), () => row));
@@ -161,7 +161,7 @@ export const Board = (): JSX.Element => {
   };
 
   return (
-    <div className="BoardContainer">
+    <div className="BoardContainer noselect">
       <Controls reset={resetGame} isWin={isWin} isLose={isLose} />
       <div className="Board">
         {board.map((row, rowIdx) => (
