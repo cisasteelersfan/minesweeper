@@ -1,0 +1,2 @@
+.Square{width:50px;height:50px;margin:-2.5px;border:7px solid #000;display:flex;align-items:center;justify-content:center;font-size:xx-large}.covered{background-color:orange}.dot{width:20px;height:20px;background-color:red;border-radius:50%}.flag{width:50px;height:50px}.BoardContainer{display:flex;flex-direction:column;align-items:center}.Board{margin:10px 0}.Board .row{display:flex;flex-direction:row}.Controls{height:50px}.StatusText{font-size:xx-large}
+/*# sourceMappingURL=main.6c442c48.chunk.css.map */
