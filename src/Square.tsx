@@ -25,7 +25,7 @@ export const Square = (props: SquareProps) => {
 
   React.useEffect(() => {
     if (startLongPress) {
-      timerId.current = window.setTimeout(longPress, 300);
+      timerId.current = window.setTimeout(longPress, 200);
     }
     return () => {
       clearTimeout(timerId.current);
